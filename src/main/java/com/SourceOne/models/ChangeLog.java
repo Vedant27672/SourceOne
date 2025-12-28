@@ -1,7 +1,10 @@
 package com.SourceOne.models;
 
 import com.SourceOne.enums.ChangeType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "so_change_log")
@@ -14,8 +17,10 @@ public class ChangeLog extends CommonDataModel {
     @Column(name = "change_type", nullable = false)
     private ChangeType changeType;
 
-    @Column(name = "change_summary", length = 1000)
-    private String changeSummary;
+    @Type(JsonType.class)
+    @Column(name = "change_summary", columnDefinition = "json")
+    private JsonNode changeSummary;
+
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "changed_by", nullable = false)
@@ -45,11 +50,11 @@ public class ChangeLog extends CommonDataModel {
         this.changeType = changeType;
     }
 
-    public String getChangeSummary() {
+    public JsonNode getChangeSummary() {
         return changeSummary;
     }
 
-    public void setChangeSummary(String changeSummary) {
+    public void setChangeSummary(JsonNode changeSummary) {
         this.changeSummary = changeSummary;
     }
 }

@@ -15,10 +15,12 @@ public class DocumentationService extends AbstractCDMService<Documentation> {
 
     private final DocumentationRepository documentationRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
-    public DocumentationService(DocumentationRepository documentationRepository, UserRepository userRepository) {
+    public DocumentationService(DocumentationRepository documentationRepository, UserRepository userRepository, UserService userService) {
         this.documentationRepository = documentationRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Transactional
@@ -46,10 +48,9 @@ public class DocumentationService extends AbstractCDMService<Documentation> {
         existingDoc.setStale(documentation.isStale());
 
         if (documentation.getUpdatedBy() != null) {
-            User updatedBy = userRepository.findById(documentation.getUpdatedBy().getId()).orElseThrow(() -> new RuntimeException("User not found"));
-            existingDoc.setUpdatedBy(updatedBy);
+            User user = userService.findByUsername(documentation.getUpdatedBy());
+            existingDoc.setUpdatedBy(user.getUsername());
         }
-
         return documentationRepository.save(existingDoc);
     }
 

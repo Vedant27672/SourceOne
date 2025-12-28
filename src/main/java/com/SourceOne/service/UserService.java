@@ -7,95 +7,102 @@ import com.SourceOne.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
+@Transactional
 public class UserService extends AbstractCDMService<User> {
 
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
-
 
     public UserService(UserRepository userRepository, TeamRepository teamRepository) {
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
     }
 
-    @Transactional
-    public User createUser(User user) {
+    /* ---------------- CREATE ---------------- */
 
-        if (user.getUsername() == null || user.getUsername().isBlank()) {
-            throw new RuntimeException("Username is required");
+    public User create(User user, User createdBy) {
+        if (createdBy != null && createdBy.getId() != null) {
+            User persistedCreatedBy = userRepository.findById(createdBy.getId()).orElseThrow(() -> new RuntimeException("CreatedBy user not found"));
+            user.setCreatedBy(persistedCreatedBy);
         }
-
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Username already exists: " + user.getUsername());
-        }
-
         return userRepository.save(user);
     }
 
-    @Transactional
-    public User updateUser(User user) {
+    /* ---------------- READ ---------------- */
 
-        User existingUser = userRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("User not found with ID: " + user.getId()));
-
-        existingUser.setName(user.getName());
-
-        if (!existingUser.getUsername().equals(user.getUsername()) && userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Username already exists");
-        }
-        existingUser.setUsername(user.getUsername());
-
-        if (user.getPassword() != null && !user.getPassword().isBlank()) {
-            existingUser.setPassword(user.getPassword());
-        }
-
-        existingUser.setRole(user.getRole());
-
-        if (user.getUpdatedBy() != null && user.getUpdatedBy().getId() != null) {
-            User updatedBy = userRepository.findById(user.getUpdatedBy().getId()).orElseThrow(() -> new RuntimeException("UpdatedBy user not found"));
-            existingUser.setUpdatedBy(updatedBy);
-        }
-
-        return userRepository.save(existingUser);
-    }
-
-    public User getUserById(String id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
-    }
-
-    public User getUserByUsername(String username) {
+    public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found with username: " + username));
     }
 
-    @Transactional
-    public User addTeams(User user, Set<Team> teams, User updatedBy) {
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
 
-        if (user == null || user.getId() == null) {
-            throw new RuntimeException("User is required");
-        }
+    /* ---------------- UPDATE ---------------- */
 
-        User existingUser = userRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("User not found with ID: " + user.getId()));
-
-        if (teams != null && !teams.isEmpty()) {
-            for (Team team : teams) {
-                if (team == null || team.getId() == null) {
-                    throw new RuntimeException("Invalid team in teams list");
-                }
-
-                Team persistedTeam = teamRepository.findById(team.getId()).orElseThrow(() -> new RuntimeException("Team not found with ID: " + team.getId()));
-
-                existingUser.getTeams().add(persistedTeam); // Set prevents duplicates
-            }
-        }
-
+    public User update(User user, User updatedBy) {
+        User existing = findByUsername(user.getUsername());
+        existing.setName(user.getName());
+        existing.setRole(user.getRole());
         if (updatedBy != null && updatedBy.getId() != null) {
             User persistedUpdatedBy = userRepository.findById(updatedBy.getId()).orElseThrow(() -> new RuntimeException("UpdatedBy user not found"));
-            existingUser.setUpdatedBy(persistedUpdatedBy);
+            existing.setUpdatedBy(persistedUpdatedBy.getUsername());
         }
+        return userRepository.save(existing);
+    }
 
+
+    /* ---------------- TEAM MANAGEMENT ---------------- */
+
+    public User addTeams(String username, Set<Team> teams, User updatedBy) {
+        User existingUser = findByUsername(username);
+        if (teams != null) {
+            for (Team team : teams) {
+                if (team == null || team.getId() == null) {
+                    throw new RuntimeException("Invalid team");
+                }
+                Team persistedTeam = teamRepository.findById(team.getId()).orElseThrow(() -> new RuntimeException("Team not found with ID: " + team.getId()));
+                existingUser.getTeams().add(persistedTeam);
+            }
+        }
+        setUpdatedBy(existingUser, updatedBy);
         return userRepository.save(existingUser);
     }
 
+    public User removeTeams(String username, Set<Team> teams, User updatedBy) {
+        User existingUser = findByUsername(username);
+        if (teams != null) {
+            for (Team team : teams) {
+                if (team == null || team.getId() == null) {
+                    throw new RuntimeException("Invalid team");
+                }
+                Team persistedTeam = teamRepository.findById(team.getId()).orElseThrow(() -> new RuntimeException("Team not found with ID: " + team.getId()));
+                existingUser.getTeams().remove(persistedTeam);
+            }
+        }
+        setUpdatedBy(existingUser, updatedBy);
+        return userRepository.save(existingUser);
+    }
+
+    /* ---------------- DELETE ---------------- */
+
+    public User deleteAndReturn(String username) {
+        User user = findByUsername(username);
+        userRepository.delete(user);
+        return user;
+    }
+
+
+    /* ---------------- HELPER ---------------- */
+
+    private void setUpdatedBy(User target, User updatedBy) {
+        if (updatedBy != null && updatedBy.getId() != null) {
+            User persistedUpdatedBy = userRepository.findById(updatedBy.getId()).orElseThrow(() -> new RuntimeException("UpdatedBy user not found"));
+            target.setUpdatedBy(persistedUpdatedBy.getUsername());
+        }
+    }
 }

@@ -25,7 +25,7 @@ public class Main {
     @Bean
     CommandLineRunner runUpdates(UserRepository userRepository, TeamRepository teamRepository, SystemEntityRepository systemEntityRepository, ApiRepository apiRepository, DocumentationRepository documentationRepository, ChangeLogRepository changeLogRepository) {
         return args -> {
-            updateDummyData(userRepository, teamRepository, systemEntityRepository, apiRepository, documentationRepository, changeLogRepository);
+//            updateDummyData(userRepository, teamRepository, systemEntityRepository, apiRepository, documentationRepository, changeLogRepository);
         };
     }
 
@@ -35,51 +35,51 @@ public class Main {
     }
 
     // ================= UPDATE (CALLED) =================
-    private void updateDummyData(UserRepository userRepository, TeamRepository teamRepository, SystemEntityRepository systemEntityRepository, ApiRepository apiRepository, DocumentationRepository documentationRepository, ChangeLogRepository changeLogRepository) {
-
-        // ---- Update User ----
-        userRepository.findByUsername("bob").ifPresent(user -> {
-            user.setName("Bob Marley");
-            user.setRole("ADMIN");
-            userRepository.save(user);
-        });
-
-        // ---- Update Team ----
-        teamRepository.findByName("Platform Team").ifPresent(team -> {
-            userRepository.findByUsername("bob").ifPresent(team::setOwner);
-            team.setDescription("Handles core platform & infrastructure");
-            teamRepository.save(team);
-        });
-
-        // ---- Update System ----
-        systemEntityRepository.findByName("Order System").ifPresent(system -> {
-            system.setDescription("Core order processing system (updated)");
-            system.setSourceOfTruth(false);
-            systemEntityRepository.save(system);
-        });
-
-        // ---- Update API ----
-        apiRepository.findByName("Create Order").ifPresent(api -> {
-            api.setEndpoint("/orders/create");
-            api.setStatus(APIStatus.DEPRECATED);
-            apiRepository.save(api);
-        });
-
-        // ---- Update Documentation ----
-        systemEntityRepository.findByName("Order System").ifPresent(system -> {
-            documentationRepository.findByEntityTypeAndEntityId(EntityType.SYSTEM, system.getId()).stream().findFirst().ifPresent(doc -> {
-                doc.setContent("Updated documentation for Order System");
-                doc.setStale(true);
-                documentationRepository.save(doc);
-            });
-        });
-
-        // ---- Update Change Log ----
-        changeLogRepository.findAll().stream().findFirst().ifPresent(log -> {
-            log.setChangeSummary("Order system creation reviewed and updated");
-            changeLogRepository.save(log);
-        });
-
-        System.out.println("🔄 Dummy data updated successfully");
-    }
+//    private void updateDummyData(UserRepository userRepository, TeamRepository teamRepository, SystemEntityRepository systemEntityRepository, ApiRepository apiRepository, DocumentationRepository documentationRepository, ChangeLogRepository changeLogRepository) {
+//
+//        // ---- Update User ----
+//        userRepository.findByUsername("bob").ifPresent(user -> {
+//            user.setName("Bob Marley");
+//            user.setRole("ADMIN");
+//            userRepository.save(user);
+//        });
+//
+//        // ---- Update Team ----
+//        teamRepository.findByName("Platform Team").ifPresent(team -> {
+//            userRepository.findByUsername("bob").ifPresent(team::setOwner);
+//            team.setDescription("Handles core platform & infrastructure");
+//            teamRepository.save(team);
+//        });
+//
+//        // ---- Update System ----
+//        systemEntityRepository.findByName("Order System").ifPresent(system -> {
+//            system.setDescription("Core order processing system (updated)");
+//            system.setSourceOfTruth(false);
+//            systemEntityRepository.save(system);
+//        });
+//
+//        // ---- Update API ----
+//        apiRepository.findByName("Create Order").ifPresent(api -> {
+//            api.setEndpoint("/orders/create");
+//            api.setStatus(APIStatus.DEPRECATED);
+//            apiRepository.save(api);
+//        });
+//
+//        // ---- Update Documentation ----
+//        systemEntityRepository.findByName("Order System").ifPresent(system -> {
+//            documentationRepository.findByEntityTypeAndEntityId(EntityType.SYSTEM, system.getId()).stream().findFirst().ifPresent(doc -> {
+//                doc.setContent("Updated documentation for Order System");
+//                doc.setStale(true);
+//                documentationRepository.save(doc);
+//            });
+//        });
+//
+//        // ---- Update Change Log ----
+//        changeLogRepository.findAll().stream().findFirst().ifPresent(log -> {
+//            log.setChangeSummary("Order system creation reviewed and updated");
+//            changeLogRepository.save(log);
+//        });
+//
+//        System.out.println("🔄 Dummy data updated successfully");
+//    }
 }

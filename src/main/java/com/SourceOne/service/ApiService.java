@@ -50,7 +50,7 @@ public class ApiService extends AbstractCDMService<Api> {
         Api api = apiRepository.findById(apiId).orElseThrow(() -> new RuntimeException("API not found with ID: " + apiId));
         User updatedBy = userRepository.findById(updatedById).orElseThrow(() -> new RuntimeException("Updated by user not found with ID: " + updatedById));
         api.setStatus(status);
-        api.setUpdatedBy(updatedBy);
+        api.setUpdatedBy(updatedBy.getUsername());
         return apiRepository.save(api);
     }
 

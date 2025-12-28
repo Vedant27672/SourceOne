@@ -5,6 +5,7 @@ import com.SourceOne.models.ChangeLog;
 import com.SourceOne.models.User;
 import com.SourceOne.repository.ChangeLogRepository;
 import com.SourceOne.repository.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class ChangeLogService extends AbstractCDMService<ChangeLog> {
     }
 
     @Transactional
-    public ChangeLog createChangeLog(String entityType, ChangeType changeType, User changedBy, String changeSummary) {
+    public ChangeLog createChangeLog(String entityType, ChangeType changeType, User changedBy, JsonNode changeSummary) {
 
         if (changedBy == null || changedBy.getId() == null) {
             throw new RuntimeException("changedBy is required");
@@ -36,13 +37,13 @@ public class ChangeLogService extends AbstractCDMService<ChangeLog> {
     }
 
     @Transactional
-    public ChangeLog updateChangeLogSummary(String changeLogId, String newSummary, User updatedBy) {
+    public ChangeLog updateChangeLogSummary(String changeLogId, JsonNode newSummary, User updatedBy) {
 
         ChangeLog changeLog = changeLogRepository.findById(changeLogId).orElseThrow(() -> new RuntimeException("ChangeLog not found"));
 
         if (updatedBy != null) {
             User persistedUser = userRepository.findById(updatedBy.getId()).orElseThrow(() -> new RuntimeException("User not found"));
-            changeLog.setUpdatedBy(persistedUser);
+            changeLog.setUpdatedBy(persistedUser.getUsername());
         }
 
         changeLog.setChangeSummary(newSummary);

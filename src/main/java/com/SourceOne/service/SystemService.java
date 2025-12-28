@@ -15,11 +15,14 @@ public class SystemService extends AbstractCDMService<SystemEntity> {
     private final SystemEntityRepository systemEntityRepository;
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
-    public SystemService(SystemEntityRepository systemEntityRepository, TeamRepository teamRepository, UserRepository userRepository) {
+
+    public SystemService(SystemEntityRepository systemEntityRepository, TeamRepository teamRepository, UserRepository userRepository, UserService userService) {
         this.systemEntityRepository = systemEntityRepository;
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Transactional
@@ -54,8 +57,8 @@ public class SystemService extends AbstractCDMService<SystemEntity> {
         }
 
         if (system.getUpdatedBy() != null) {
-            User updatedBy = userRepository.findById(system.getUpdatedBy().getId()).orElseThrow(() -> new RuntimeException("User not found"));
-            existingSystem.setUpdatedBy(updatedBy);
+            User user = userService.findByUsername(system.getUpdatedBy());
+            existingSystem.setUpdatedBy(user.getUsername());
         }
 
         return systemEntityRepository.save(existingSystem);

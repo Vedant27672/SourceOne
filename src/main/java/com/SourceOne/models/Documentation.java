@@ -1,7 +1,10 @@
 package com.SourceOne.models;
 
 import com.SourceOne.enums.EntityType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "so_documentation")
@@ -14,10 +17,11 @@ public class Documentation extends CommonDataModel {
     @Column(name = "entity_id", nullable = false)
     private String entityId;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String content;
+    @Type(JsonType.class)
+    @Column(columnDefinition = "json", nullable = false)
+    private JsonNode content;
 
-    @Column(name = "doc_version")
+    @Column(name = "doc_version", nullable = false)
     private String docVersion;
 
     @Column(name = "is_stale", nullable = false)
@@ -39,11 +43,11 @@ public class Documentation extends CommonDataModel {
         this.entityId = entityId;
     }
 
-    public String getContent() {
+    public JsonNode getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(JsonNode content) {
         this.content = content;
     }
 

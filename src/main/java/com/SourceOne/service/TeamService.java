@@ -14,10 +14,12 @@ public class TeamService extends AbstractCDMService<Team> {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
-    public TeamService(TeamRepository teamRepository, UserRepository userRepository) {
+    public TeamService(TeamRepository teamRepository, UserRepository userRepository, UserService userService) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Transactional
@@ -56,8 +58,8 @@ public class TeamService extends AbstractCDMService<Team> {
         existingTeam.setDescription(team.getDescription());
 
         if (team.getUpdatedBy() != null) {
-            User updatedBy = userRepository.findById(team.getUpdatedBy().getId()).orElseThrow(() -> new RuntimeException("User not found"));
-            existingTeam.setUpdatedBy(updatedBy);
+            User user = userService.findByUsername(team.getUpdatedBy());
+            existingTeam.setUpdatedBy(user.getUsername());
         }
 
         if (team.getOwner() != null) {
@@ -101,9 +103,8 @@ public class TeamService extends AbstractCDMService<Team> {
             }
         }
 
-        if (updatedBy != null && updatedBy.getId() != null) {
-            User persistedUpdatedBy = userRepository.findById(updatedBy.getId()).orElseThrow(() -> new RuntimeException("UpdatedBy user not found"));
-            existingTeam.setUpdatedBy(persistedUpdatedBy);
+        if (updatedBy != null && updatedBy.getUsername() != null) {
+            existingTeam.setUpdatedBy(updatedBy.getUsername());
         }
 
         return teamRepository.save(existingTeam);

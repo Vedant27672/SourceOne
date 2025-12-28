@@ -12,7 +12,6 @@ public class Api extends CommonDataModel {
     @JoinColumn(name = "system_id", nullable = false)
     private SystemEntity system;
 
-
     @Column(nullable = false)
     private String name;
 

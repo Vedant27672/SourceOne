@@ -16,7 +16,7 @@ public class Team extends CommonDataModel {
 
     // Team owner (unchanged)
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     // Team members

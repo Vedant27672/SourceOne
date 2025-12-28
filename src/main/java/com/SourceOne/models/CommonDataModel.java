@@ -24,9 +24,8 @@ public abstract class CommonDataModel {
     @JoinColumn(name = "created_by")
     protected User createdBy;
 
-    @ManyToOne
-    @JoinColumn(name = "updated_by")
-    protected User updatedBy;
+    @Column(name = "updated_by")
+    protected String updatedBy;
 
     @Column(name = "creation_time", updatable = false)
     protected LocalDateTime creationTime;
@@ -90,11 +89,11 @@ public abstract class CommonDataModel {
         this.createdBy = createdBy;
     }
 
-    public User getUpdatedBy() {
+    public String getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(User updatedBy) {
+    public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
 

@@ -16,7 +16,7 @@ public class SystemEntity extends CommonDataModel {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "owner_team_id")
+    @JoinColumn(name = "owner_team_id", nullable = false)
     private Team ownerTeam;
 
     @Column(name = "source_of_truth", nullable = false)
@@ -66,6 +66,7 @@ public class SystemEntity extends CommonDataModel {
         BACKEND,
         MOBILE,
         DATABASE,
-        EXTERNAL
+        EXTERNAL,
+        UI
     }
 }
