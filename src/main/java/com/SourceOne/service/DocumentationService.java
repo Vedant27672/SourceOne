@@ -29,10 +29,8 @@ public class DocumentationService extends AbstractCDMService<Documentation> {
         if (documentation.getEntityType() == null || documentation.getEntityId() == null || documentation.getContent() == null) {
             throw new RuntimeException("Required fields missing");
         }
-
         User createdBy = userRepository.findById(createdById).orElseThrow(() -> new RuntimeException("User not found with ID: " + createdById));
-
-        documentation.setCreatedBy(createdBy);
+        documentation.setCreatedBy(createdBy.getUsername());
         return documentationRepository.save(documentation);
     }
 

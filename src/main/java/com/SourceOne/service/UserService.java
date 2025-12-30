@@ -26,8 +26,8 @@ public class UserService extends AbstractCDMService<User> {
 
     public User create(User user, User createdBy) {
         if (createdBy != null && createdBy.getId() != null) {
-            User persistedCreatedBy = userRepository.findById(createdBy.getId()).orElseThrow(() -> new RuntimeException("CreatedBy user not found"));
-            user.setCreatedBy(persistedCreatedBy);
+            User userdb = findByUsername(createdBy.getUsername());
+            user.setCreatedBy(userdb.getUsername());
         }
         return userRepository.save(user);
     }

@@ -20,9 +20,9 @@ public abstract class CommonDataModel {
     @Column(name = "active_status", nullable = false)
     protected ActiveStatus activeStatus = ActiveStatus.ACTIVE;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by")
-    protected User createdBy;
+
+    @Column(name = "created_by")
+    protected String createdBy;
 
     @Column(name = "updated_by")
     protected String updatedBy;
@@ -81,11 +81,11 @@ public abstract class CommonDataModel {
         this.activeStatus = activeStatus;
     }
 
-    public User getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(User createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 

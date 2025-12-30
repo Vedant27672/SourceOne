@@ -2,60 +2,84 @@ package com.SourceOne.service;
 
 import com.SourceOne.models.Api;
 import com.SourceOne.models.SystemEntity;
-import com.SourceOne.models.User;
 import com.SourceOne.repository.ApiRepository;
 import com.SourceOne.repository.SystemEntityRepository;
-import com.SourceOne.repository.UserRepository;
-import com.SourceOne.enums.APIStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ApiService extends AbstractCDMService<Api> {
 
     private final ApiRepository apiRepository;
     private final SystemEntityRepository systemEntityRepository;
-    private final UserRepository userRepository;
 
-    public ApiService(ApiRepository apiRepository, SystemEntityRepository systemEntityRepository, UserRepository userRepository) {
+    public ApiService(ApiRepository apiRepository, SystemEntityRepository systemEntityRepository) {
         this.apiRepository = apiRepository;
         this.systemEntityRepository = systemEntityRepository;
-        this.userRepository = userRepository;
     }
 
-    @Transactional
-    public Api createApi(Api api) {
+    /* ================= CREATE ================= */
 
+    public Api create(Api api, String createdByUsername) {
         if (api.getSystem() == null || api.getSystem().getId() == null) {
             throw new RuntimeException("System is required");
         }
-
         SystemEntity system = systemEntityRepository.findById(api.getSystem().getId()).orElseThrow(() -> new RuntimeException("System not found"));
         api.setSystem(system);
-
-        if (api.getCreatedBy() != null) {
-            User createdBy = userRepository.findById(api.getCreatedBy().getId()).orElseThrow(() -> new RuntimeException("User not found"));
-            api.setCreatedBy(createdBy);
+        api.setCreatedBy(createdByUsername);
+        api.setUpdatedBy(createdByUsername);
+        if (api.getApiVersion() == null) {
+            api.setApiVersion(1L);
         }
-
-        api.setApiVersion(0L);
         return apiRepository.save(api);
     }
 
+    /* ================= READ ================= */
 
-    @Transactional
-    public Api updateApiStatus(String apiId, APIStatus status, String updatedById) {
-        Api api = apiRepository.findById(apiId).orElseThrow(() -> new RuntimeException("API not found with ID: " + apiId));
-        User updatedBy = userRepository.findById(updatedById).orElseThrow(() -> new RuntimeException("Updated by user not found with ID: " + updatedById));
-        api.setStatus(status);
-        api.setUpdatedBy(updatedBy.getUsername());
-        return apiRepository.save(api);
+    public Api getById(String apiId) {
+        return apiRepository.findById(apiId).orElseThrow(() -> new RuntimeException("API not found with id: " + apiId));
     }
 
-    public List<Api> getApisBySystemId(SystemEntity system) {
+    public List<Api> getAll() {
+        return apiRepository.findAll();
+    }
+
+    public List<Api> getBySystem(SystemEntity system) {
         return apiRepository.findBySystem(system);
     }
 
+    /* ================= UPDATE ================= */
+
+    public Api update(String apiId, Api updatedApi, String updatedByUsername) {
+
+        Api existingApi = apiRepository.findById(apiId).orElseThrow(() -> new RuntimeException("API not found with id: " + apiId));
+
+        // update allowed fields only
+        existingApi.setName(updatedApi.getName());
+        existingApi.setEndpoint(updatedApi.getEndpoint());
+        existingApi.setHttpMethod(updatedApi.getHttpMethod());
+        existingApi.setStatus(updatedApi.getStatus());
+
+        if (updatedApi.getSystem() != null && updatedApi.getSystem().getId() != null) {
+            SystemEntity system = systemEntityRepository.findById(updatedApi.getSystem().getId()).orElseThrow(() -> new RuntimeException("System not found"));
+            existingApi.setSystem(system);
+        }
+
+        existingApi.setUpdatedBy(updatedByUsername);
+        existingApi.setApiVersion(existingApi.getApiVersion() + 1);
+
+        return apiRepository.save(existingApi);
+    }
+
+    /* ================= DELETE ================= */
+
+    public Api delete(String apiId) {
+        Api api = apiRepository.findById(apiId).orElseThrow(() -> new RuntimeException("API not found with id: " + apiId));
+
+        apiRepository.delete(api);
+        return api;
+    }
 }

@@ -29,12 +29,23 @@ public class User extends CommonDataModel {
     @JsonIgnore // prevents infinite JSON recursion
     private Set<Team> teams = new HashSet<>();
 
+    @Column(nullable = false)
+    private Boolean verified;
+
     @PrePersist
     @PreUpdate
     private void hashPassword() {
         if (password != null && !PasswordUtil.isHashed(password)) {
             password = PasswordUtil.hash(password);
         }
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
     }
 
     // getters & setters

@@ -34,8 +34,8 @@ public class SystemService extends AbstractCDMService<SystemEntity> {
         }
 
         if (system.getCreatedBy() != null) {
-            User createdBy = userRepository.findById(system.getCreatedBy().getId()).orElseThrow(() -> new RuntimeException("User not found"));
-            system.setCreatedBy(createdBy);
+            User user = userService.findByUsername(system.getCreatedBy());
+            system.setCreatedBy(user.getUsername());
         }
 
         return systemEntityRepository.save(system);
