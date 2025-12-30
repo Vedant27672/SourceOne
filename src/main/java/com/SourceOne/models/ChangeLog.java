@@ -57,4 +57,14 @@ public class ChangeLog extends CommonDataModel {
     public void setChangeSummary(JsonNode changeSummary) {
         this.changeSummary = changeSummary;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

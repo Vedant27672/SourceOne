@@ -4,6 +4,7 @@ import com.SourceOne.security.PasswordUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +32,17 @@ public class User extends CommonDataModel {
 
     @Column(nullable = false)
     private Boolean verified;
+
+    @Column(name = "mobile_number")
+    private String mobile;
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
 
     @PrePersist
     @PreUpdate
@@ -88,5 +100,15 @@ public class User extends CommonDataModel {
 
     public void setTeams(Set<Team> teams) {
         this.teams = teams;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

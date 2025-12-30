@@ -29,6 +29,7 @@ public class UserService extends AbstractCDMService<User> {
             User userdb = findByUsername(createdBy.getUsername());
             user.setCreatedBy(userdb.getUsername());
         }
+        user.setVerified(false);
         return userRepository.save(user);
     }
 

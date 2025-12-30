@@ -60,4 +60,14 @@ public class Team extends CommonDataModel {
     public void setMembers(Set<User> members) {
         this.members = members;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

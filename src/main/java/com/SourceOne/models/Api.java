@@ -76,4 +76,14 @@ public class Api extends CommonDataModel {
     public void setStatus(APIStatus apiStatus) {
         this.apiStatus = apiStatus;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
