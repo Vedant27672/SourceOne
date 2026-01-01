@@ -10,6 +10,7 @@ import java.util.UUID;
 public abstract class CommonDataModel {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(length = 36, nullable = false, updatable = false)
     protected String id;
 
@@ -35,9 +36,6 @@ public abstract class CommonDataModel {
 
     @PrePersist
     protected void onCreate() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID().toString();
-        }
         this.creationTime = LocalDateTime.now();
         this.lastModifiedTime = LocalDateTime.now();
     }

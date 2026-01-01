@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "verification_token", indexes = {@Index(name = "idx_verification_token_email", columnList = "email")})
-public class VerificationToken extends CommonDataModel{
+public class VerificationToken extends CommonDataModel {
 
     @Column(nullable = false, length = 255)
     private String email;

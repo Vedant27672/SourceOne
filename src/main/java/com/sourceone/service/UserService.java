@@ -56,6 +56,10 @@ public class UserService extends AbstractCDMService<User> {
         return userRepository.save(existing);
     }
 
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
 
     /* ---------------- TEAM MANAGEMENT ---------------- */
 

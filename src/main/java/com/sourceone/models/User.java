@@ -111,4 +111,8 @@ public class User extends CommonDataModel {
     public int hashCode() {
         return super.hashCode();
     }
+
+    public boolean isVerified() {
+        return  verified;
+    }
 }
